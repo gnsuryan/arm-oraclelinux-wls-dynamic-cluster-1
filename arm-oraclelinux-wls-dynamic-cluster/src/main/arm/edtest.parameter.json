@@ -1,0 +1,95 @@
+{
+  "Location": {
+    "value": "eastus"
+  },
+  "adminPasswordOrKey": {
+    "value": "Weblogic@579"
+  },
+  "adminUsername": {
+    "value": "weblogic"
+  },
+  "authenticationType": {
+    "value": "password"
+  },
+  "dynamicClusterSize": {
+    "value": 3
+  },
+  "enableAAD": {
+    "value": false
+  },
+  "enableCoherence": {
+    "value": false
+  },
+  "enableCoherenceWebLocalStorage": {
+    "value": false
+  },
+  "enableDB": {
+    "value": false
+  },
+  "enableCustomDNS": {
+    "value": false
+  },
+  "enableELK": {
+    "value": false
+  },
+  "enableOHS": {
+    "value": false
+  },
+  "hasDNSZones": {
+    "value": false
+  },
+  "maxDynamicClusterSize": {
+    "value": 8
+  },
+  "numberOfCoherenceCacheInstances": {
+    "value": 1
+  },
+  "skuUrnVersion": {
+    "value": "owls-122140-jdk8-ol76;Oracle:weblogic-122140-jdk8-ol76:owls-122140-jdk8-ol7;latest"
+  },
+  "vmSizeSelect": {
+    "value": "Standard_A1"
+  },
+  "wlsPassword": {
+    "value": "Weblogic5678"
+  },
+  "wlsUserName": {
+    "value": "weblogic"
+  },
+  "enableCustomSSL": {
+    "value": true
+  },
+  "sslConfigurationAccessOption": {
+    "value": "keyVaultStoredConfig"
+  },
+  "adminSSLKeyVaultResourceGroup": {
+    "value": "guru-rsg-dont-delete"
+  },
+  "adminSSLKeyVaultName": {
+    "value": "demoGDKeyVault"
+  },
+  "keyVaultCustomIdentityKeyStoreDataSecretName": {
+    "value": "IdentityKeyStoreDataSecret"
+  },
+  "keyVaultCustomIdentityKeyStorePassPhraseSecretName": {
+    "value": "IdentityStorePassPhraseSecret"
+  },
+  "keyVaultCustomIdentityKeyStoreType": {
+    "value": "JKS"
+  },
+  "keyVaultCustomTrustKeyStoreDataSecretName": {
+    "value": "TrustStoreDataSecret"
+  },
+  "keyVaultCustomTrustKeyStorePassPhraseSecretName": {
+    "value": "TrustStorePassPhraseSecret"
+  },
+  "keyVaultCustomTrustKeyStoreType": {
+    "value": "JKS"
+  },
+  "keyVaultPrivateKeyAliasSecretName": {
+    "value": "ServerPrivateKeyAlias"
+  },
+  "keyVaultPrivateKeyPassPhraseSecretName": {
+    "value": "PrivateKeyPassPhraseSecret"
+  }
+}
