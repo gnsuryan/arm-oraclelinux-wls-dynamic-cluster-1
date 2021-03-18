@@ -229,6 +229,7 @@ cat <<EOF>>$wlsDomainPath/managed-domain.yaml
            CustomTrustKeyStoreType: "$customTrustKeyStoreType"
            CustomTrustKeyStorePassPhraseEncrypted: "$customTrustKeyStorePassPhrase"
 EOF
+        fi
 
 cat <<EOF>>$wlsDomainPath/managed-domain.yaml
            SSL:
@@ -249,6 +250,7 @@ cat <<EOF >>$wlsDomainPath/managed-domain.yaml
        NodeManagerUsername: "$wlsUserName"
        NodeManagerPasswordEncrypted: "$wlsPassword" 
 EOF
+
 }
 
 #This function to add machine for a given managed server
@@ -687,8 +689,8 @@ else
     mountFileShare
     openPortsForCoherence
     updateNetworkRules
-    createManagedSetup
     storeCustomSSLCerts
+    createManagedSetup
     createNodeManagerService
     enabledAndStartNodeManagerService
     startManagedServer
