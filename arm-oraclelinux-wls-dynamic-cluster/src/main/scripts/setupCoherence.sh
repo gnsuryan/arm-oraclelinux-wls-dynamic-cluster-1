@@ -216,6 +216,35 @@ topology:
            Notes: "$wlsServerName managed server"
            Cluster: "$storageClusterName"
            Machine: "$nmHost"
+EOF
+
+        if [ "${isCustomSSLEnabled}" == "true" ];
+        then
+cat <<EOF>>$wlsDomainPath/managed-domain.yaml
+           KeyStores: 'CustomIdentityAndCustomTrust'
+           CustomIdentityKeyStoreFileName: "$customIdentityKeyStoreFileName"
+           CustomIdentityKeyStoreType: "$customIdentityKeyStoreType"
+           CustomIdentityKeyStorePassPhraseEncrypted: "$customIdentityKeyStorePassPhrase"
+           CustomTrustKeyStoreFileName: "$customTrustKeyStoreFileName"
+           CustomTrustKeyStoreType: "$customTrustKeyStoreType"
+           CustomTrustKeyStorePassPhraseEncrypted: "$customTrustKeyStorePassPhrase"
+EOF
+
+cat <<EOF>>$wlsDomainPath/managed-domain.yaml
+           SSL:
+                HostnameVerificationIgnored: true
+                HostnameVerifier: 'None'
+EOF
+
+        if [ "${isCustomSSLEnabled}" == "true" ];
+        then
+cat <<EOF>>$wlsDomainPath/managed-domain.yaml
+                ServerPrivateKeyAlias: "$serverPrivateKeyAlias"
+                ServerPrivateKeyPassPhraseEncrypted: "$serverPrivateKeyPassPhrase"
+EOF
+        fi
+
+cat <<EOF >>$wlsDomainPath/managed-domain.yaml
    SecurityConfiguration:
        NodeManagerUsername: "$wlsUserName"
        NodeManagerPasswordEncrypted: "$wlsPassword" 
@@ -247,6 +276,8 @@ EOF
 function create_ms_server_model() {
     echo "Creating managed server $wlsServerName model"
     cat <<EOF >$wlsDomainPath/add-server.py
+
+isCustomSSLEnabled='${isCustomSSLEnabled}'
 connect('$wlsUserName','$wlsPassword','t3://$wlsAdminURL')
 edit("$wlsServerName")
 startEdit()
@@ -258,10 +289,23 @@ cmo.setCluster(getMBean('/Clusters/$storageClusterName'))
 cmo.setListenAddress('$nmHost')
 cmo.setListenPort(int($storageListenPort))
 cmo.setListenPortEnabled(true)
+
+if isCustomSSLEnabled == 'true' :
+    cmo.setKeyStores('CustomIdentityAndCustomTrust')
+    cmo.setCustomIdentityKeyStoreFileName('$customIdentityKeyStoreFileName')
+    cmo.setCustomIdentityKeyStoreType('$customIdentityKeyStoreType')
+    set('CustomIdentityKeyStorePassPhrase', '$customIdentityKeyStorePassPhrase')
+    cmo.setCustomTrustKeyStoreFileName('$customTrustKeyStoreFileName')
+    cmo.setCustomTrustKeyStoreType('$customTrustKeyStoreType')
+    set('CustomTrustKeyStorePassPhrase', '$customTrustKeyStorePassPhrase')
+
 cd('/Servers/$wlsServerName/SSL/$wlsServerName')
-cmo.setEnabled(false)
+cmo.setServerPrivateKeyAlias('$serverPrivateKeyAlias')
+set('ServerPrivateKeyPassPhrase', '$serverPrivateKeyPassPhrase')
+cmo.setHostnameVerificationIgnored(true)
+
 cd('/Servers/$wlsServerName//ServerStart/$wlsServerName')
-arguments = '-Dweblogic.Name=$wlsServerName  -Dweblogic.management.server=http://$wlsAdminURL ${wlsCoherenceUnicastPortRange}'
+arguments = '-Dweblogic.Name=$wlsServerName -Dweblogic.security.SSL.ignoreHostnameVerification=true -Dweblogic.management.server=http://$wlsAdminURL ${wlsCoherenceUnicastPortRange}'
 cmo.setArguments(arguments)
 save()
 resolve()
