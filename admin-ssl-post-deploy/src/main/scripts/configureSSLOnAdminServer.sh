@@ -166,7 +166,7 @@ if isCustomSSLEnabled == 'true' :
     set('ServerPrivateKeyPassPhrase', '$privateKeyPassPhrase')
     cmo.setHostnameVerificationIgnored(true)
 
-cd('/Servers/$dynamicClusterServerTemplate/ServerStart/$dynamicClusterServerTemplate')
+cd('/ServerTemplates/$dynamicClusterServerTemplate/ServerStart/$dynamicClusterServerTemplate')
 arguments = '-Dweblogic.Name=$wlsServerName  -Dweblogic.security.SSL.ignoreHostnameVerification=true'
 cmo.setArguments(arguments)
 
@@ -179,10 +179,10 @@ EOF
 
 sudo chown -R $username:$groupname ${SCRIPT_PATH}/configureSSLServerTemplate.py
 
-echo "Running wlst script to configure SSL on $wlsServerName"
+echo "Running wlst script to configure SSL on $dynamicClusterServerTemplate"
 runuser -l oracle -c ". $oracleHome/oracle_common/common/bin/setWlstEnv.sh; java $WLST_ARGS weblogic.WLST ${SCRIPT_PATH}/configureSSLServerTemplate.py"
 if [[ $? != 0 ]]; then
-     echo "Error : SSL Configuration for server $wlsServerName failed"
+     echo "Error : SSL Configuration for $dynamicClusterServerTemplate failed"
      exit 1
 fi
 
