@@ -53,17 +53,12 @@ function validateInput()
         echo_stderr "managedServerPrefix is required. "
     fi
 
-    if [[ -z "$numberOfExistingNodes" ]];
-    then
-        echo_stderr "numberOfExistingNodes is required. "
-    fi
-
     if [[ -z "$isCoherenceEnabled" ]];
     then
         echo_stderr "wlsADSSLCer is required. "
     fi
 
-        if [[ -z "$numberOfCoherenceCacheInstances" ]];
+    if [[ -z "$numberOfCoherenceCacheInstances" ]];
     then
         echo_stderr "numberOfCoherenceCacheInstances is required. "
     fi
