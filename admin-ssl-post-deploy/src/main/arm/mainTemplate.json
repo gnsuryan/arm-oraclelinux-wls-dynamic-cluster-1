@@ -193,7 +193,6 @@
          "name": "post.deploy.ssl.config.end",
          "dependsOn": [
             "coherenceVMExtensionLoop",
-            "managedVMExtensionLoop",
              "[resourceId('Microsoft.Compute/virtualMachines/extensions/', parameters('adminVMName'), 'newuserscript')]"
          ],
          "properties": {
