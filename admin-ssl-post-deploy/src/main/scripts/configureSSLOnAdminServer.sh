@@ -567,31 +567,23 @@ export SCRIPT_PATH="/u01/app/scripts"
 mkdir -p ${SCRIPT_PATH}
 sudo chown -R ${username}:${groupname} ${SCRIPT_PATH}
 
+validateInput
+cleanup
+parseAndSaveCustomSSLKeyStoreData
 
-#if vmIndex is 0, the script is running on admin server, else on managed server
-if [ $vmIndex == 0 ];
+if [ "$enableAAD" == "true" ];
 then
-    validateInput
-    cleanup
-    parseAndSaveCustomSSLKeyStoreData
-
-    if [ "$enableAAD" == "true" ];
-    then
-        parseLDAPCertificate
-        importAADCertificateIntoWLSCustomTrustKeyStore
-    fi
-
-    wait_for_admin
-    configureSSLOnDynamicClusterServerTemplate
-    configureSSLOnAdminServer
-    force_restart_admin
-    restart_cluster_with_rolling_restart $clusterName
-    wait_for_admin
-    #validate_managed_servers
-    
-    cleanup
-else
-    echo "This script is used only for configuring custom SSL on WebLogic Administration Server, post deployment"
+    parseLDAPCertificate
+    importAADCertificateIntoWLSCustomTrustKeyStore
 fi
 
+wait_for_admin
+configureSSLOnDynamicClusterServerTemplate
+configureSSLOnAdminServer
+force_restart_admin
+restart_cluster_with_rolling_restart $clusterName
+wait_for_admin
+#validate_managed_servers
+
+cleanup
 
