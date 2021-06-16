@@ -515,12 +515,13 @@ export wlsDomainPath=$6
 
 export managedServerPrefix=${7}
 export coherenceServerPrefix="${managedServerPrefix}Storage"
-export numberOfExistingNodes="${8}"
+export dynamicClusterSize="${8}"
+export maxDynamicClusterSize="${9}"
 
-export isCoherenceEnabled="${9}"
+export isCoherenceEnabled="${10}"
 isCoherenceEnabled="${isCoherenceEnabled,,}"
 
-export numberOfCoherenceCacheInstances="${10}"
+export numberOfCoherenceCacheInstances="${11}"
 
 wlsServerName="admin"
 
