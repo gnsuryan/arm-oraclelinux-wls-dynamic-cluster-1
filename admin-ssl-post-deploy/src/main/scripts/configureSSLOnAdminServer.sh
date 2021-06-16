@@ -584,22 +584,10 @@ then
     wait_for_admin
     configureSSLOnDynamicClusterServerTemplate
     configureSSLOnAdminServer
-
     force_restart_admin
-    
-    #if [ "$isCoherenceEnabled" == "true" ]; 
-    #then
-    #    restart_cluster_with_rolling_restart $coherenceClusterName
-    #fi
-    
     restart_cluster_with_rolling_restart $clusterName
     wait_for_admin
     #validate_managed_servers
-    
-    #if [ "$isCoherenceEnabled" == "true" ]; 
-    #then
-    #    validate_coherence_servers
-    #fi
     
     cleanup
 else
