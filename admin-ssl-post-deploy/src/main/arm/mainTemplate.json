@@ -172,10 +172,10 @@
 					"value": "[parameters('maxDynamicClusterSize')]"
 				},
 				"coherenceCacheSettings": {
-					"value": "[variables('coherenceCacheSettings')]"
+					"value": "[parameters('coherenceCacheSettings')]"
 				},
 				"customSSLSettings": {
-					"value": "[variables('customSSLSettings')]"
+					"value": "[parameters('customSSLSettings')]"
 				}
 			}
 		}
@@ -223,10 +223,10 @@
 					"value": "[parameters('maxDynamicClusterSize')]"
 				},
 				"coherenceCacheSettings": {
-					"value": "[variables('coherenceCacheSettings')]"
+					"value": "[parameters('coherenceCacheSettings')]"
 				},
 				"customSSLSettings": {
-					"value": "[variables('customSSLSettings')]"
+					"value": "[parameters('customSSLSettings')]"
 				}
 			}
 		}
@@ -275,10 +275,10 @@
 					"value": "[parameters('maxDynamicClusterSize')]"
 				},
 				"coherenceCacheSettings": {
-					"value": "[variables('coherenceCacheSettings')]"
+					"value": "[parameters('coherenceCacheSettings')]"
 				},
 				"customSSLSettings": {
-					"value": "[variables('customSSLSettings')]"
+					"value": "[parameters('customSSLSettings')]"
 				}
 			}
 		}
