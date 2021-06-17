@@ -90,20 +90,20 @@ function cleanup()
     echo "Cleanup completed."
 }
 
-#configure SSL
-function configureSSL()
+#configure SSL on Admin Server
+function configureSSLOnDynamicClusterServerTemplate()
 {
-    echo "Configuring SSL on Server: $wlsServerName"
-    cat <<EOF >${SCRIPT_PATH}/configureSSL.py
+    echo "Configuring SSL on Dynamic Cluster Server Template"
+    cat <<EOF >${SCRIPT_PATH}/configureSSLServerTemplate.py
 
 isCustomSSLEnabled='${isCustomSSLEnabled}'
 
 connect('$wlsUserName','$wlsPassword','t3://$wlsAdminURL')
-edit("$wlsServerName")
+edit("$dynamicClusterServerTemplate")
 startEdit()
-cd('/Servers/$wlsServerName')
 
 if isCustomSSLEnabled == 'true' :
+    cd('/ServerTemplates/$dynamicClusterServerTemplate')
     cmo.setKeyStores('CustomIdentityAndCustomTrust')
     cmo.setCustomIdentityKeyStoreFileName('$customSSLIdentityKeyStoreFile')
     cmo.setCustomIdentityKeyStoreType('$customIdentityKeyStoreType')
@@ -112,32 +112,33 @@ if isCustomSSLEnabled == 'true' :
     cmo.setCustomTrustKeyStoreType('$customTrustKeyStoreType')
     set('CustomTrustKeyStorePassPhrase', '$customTrustKeyStorePassPhrase')
 
-    cd('/Servers/$wlsServerName/SSL/$wlsServerName')
+    cd('/ServerTemplates/$dynamicClusterServerTemplate/SSL/$dynamicClusterServerTemplate')
     cmo.setServerPrivateKeyAlias('$privateKeyAlias')
     set('ServerPrivateKeyPassPhrase', '$privateKeyPassPhrase')
     cmo.setHostnameVerificationIgnored(true)
 
-cd('/Servers/$wlsServerName/ServerStart/$wlsServerName')
+cd('/ServerTemplates/$dynamicClusterServerTemplate/ServerStart/$dynamicClusterServerTemplate')
 arguments = '-Dweblogic.Name=$wlsServerName  -Dweblogic.security.SSL.ignoreHostnameVerification=true'
 cmo.setArguments(arguments)
 
 save()
 resolve()
 activate()
-destroyEditSession("$wlsServerName")
+destroyEditSession("$dynamicClusterServerTemplate")
 disconnect()
 EOF
 
-sudo chown -R $username:$groupname ${SCRIPT_PATH}/configureSSL.py
+sudo chown -R $username:$groupname ${SCRIPT_PATH}/configureSSLServerTemplate.py
 
-echo "Running wlst script to configure SSL on $wlsServerName"
-runuser -l oracle -c ". $oracleHome/oracle_common/common/bin/setWlstEnv.sh; java $WLST_ARGS weblogic.WLST ${SCRIPT_PATH}/configureSSL.py"
+echo "Running wlst script to configure SSL on $dynamicClusterServerTemplate"
+runuser -l oracle -c ". $oracleHome/oracle_common/common/bin/setWlstEnv.sh; java $WLST_ARGS weblogic.WLST ${SCRIPT_PATH}/configureSSLServerTemplate.py"
 if [[ $? != 0 ]]; then
-     echo "Error : SSL Configuration for server $wlsServerName failed"
+     echo "Error : SSL Configuration for $dynamicClusterServerTemplate failed"
      exit 1
 fi
 
 }
+
 
 #This function to wait for admin server 
 function wait_for_admin()
@@ -359,6 +360,10 @@ export username="oracle"
 export groupname="oracle"
 export restartAttempt=0
 
+export clusterName="cluster1"
+export coherenceClusterName="storage1"
+export dynamicClusterServerTemplate="myServerTemplate"
+
 export KEYSTORE_PATH="$wlsDomainPath/$wlsDomainName/keystores"
 export SCRIPT_PATH="/u01/app/scripts"
 
@@ -375,6 +380,16 @@ else
     cleanup
     parseAndSaveCustomSSLKeyStoreData
     wait_for_admin
+
+    //run this script on only one managed Server VM
+    if { $vmIndex == 1 ];
+    then
+        configureSSLOnDynamicClusterServerTemplate
+    else
+        echo "waiting for SSL to be configured on Dynamic Cluster Template"
+        sleep 5m
+    fi
+
     configureNodeManagerSSL
     restartNodeManagerService
     cleanup

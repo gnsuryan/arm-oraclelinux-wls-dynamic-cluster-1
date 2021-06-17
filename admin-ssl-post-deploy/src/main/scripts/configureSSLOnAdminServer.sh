@@ -573,7 +573,6 @@ then
 fi
 
 wait_for_admin
-configureSSLOnDynamicClusterServerTemplate
 configureSSLOnAdminServer
 force_restart_admin
 restart_cluster_with_rolling_restart $clusterName
