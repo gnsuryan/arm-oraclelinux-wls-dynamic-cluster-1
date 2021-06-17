@@ -168,6 +168,9 @@
          "type": "Microsoft.Compute/virtualMachines/extensions",
          "name": "[concat(variables('const_coherenceVMPrefix'), copyIndex(1),'/newuserscript')]",
          "condition": "[and(parameters('coherenceCacheSettings').enable,parameters('customSSLSettings').enable)]",
+         "dependsOn": [
+             "[resourceId('Microsoft.Compute/virtualMachines/extensions/', parameters('adminVMName'), 'configureDCServerTemplate')]"
+         ],
          "apiVersion": "2020-06-01",
          "location": "[parameters('location')]",
          "copy": {
@@ -200,6 +203,7 @@
                 "count": "[parameters('dynamicClusterSize')]"
          },
          "dependsOn": [
+               "[resourceId('Microsoft.Compute/virtualMachines/extensions/', parameters('adminVMName'), 'configureSSLOnAdminServer')]",
                "coherenceVMExtensionLoop"
          ],
          "properties": {
@@ -224,6 +228,7 @@
          "apiVersion": "2020-06-01",
          "location": "[parameters('location')]",
          "dependsOn": [
+               "[resourceId('Microsoft.Compute/virtualMachines/extensions/', parameters('adminVMName'), 'configureDCServerTemplate')]",
                "coherenceVMExtensionLoop",
                "managedVMExtensionLoop"
          ],
@@ -247,9 +252,10 @@
          "apiVersion": "2020-06-01",
          "name": "post.deploy.ssl.config.end",
          "dependsOn": [
+             "[resourceId('Microsoft.Compute/virtualMachines/extensions/', parameters('adminVMName'), 'configureSSLOnAdminServer')]",
             "coherenceVMExtensionLoop",
-            "managedVMExtensionLoop",
-             "[resourceId('Microsoft.Compute/virtualMachines/extensions/', parameters('adminVMName'), 'newuserscript')]"
+            "managedVMExtensionLoop"
+
          ],
          "properties": {
             "mode": "Incremental",
