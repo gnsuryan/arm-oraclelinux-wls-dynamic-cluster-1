@@ -251,7 +251,7 @@
             "[resourceId('Microsoft.Compute/virtualMachines/extensions/', parameters('adminVMName'), 'configureDCServerTemplate')]",
             "coherenceVMExtensionLoop",
             "managedVMExtensionLoop",
-            "[resourceId('Microsoft.Compute/virtualMachines/extensions/', parameters('adminVMName'), 'configureSSLOnAdminServer')]",
+            "[resourceId('Microsoft.Compute/virtualMachines/extensions/', parameters('adminVMName'), 'configureSSLOnAdminServer')]"
          ],
          "properties": {
             "mode": "Incremental",
