@@ -380,16 +380,6 @@ else
     cleanup
     parseAndSaveCustomSSLKeyStoreData
     wait_for_admin
-
-    //run this script on only one managed Server VM
-    if [ $vmIndex == 1 ];
-    then
-        configureSSLOnDynamicClusterServerTemplate
-    else
-        echo "waiting for SSL to be configured on Dynamic Cluster Template"
-        sleep 5m
-    fi
-
     configureNodeManagerSSL
     restartNodeManagerService
     cleanup

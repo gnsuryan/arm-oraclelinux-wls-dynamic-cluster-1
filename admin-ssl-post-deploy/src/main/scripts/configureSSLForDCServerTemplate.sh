@@ -10,7 +10,7 @@ function echo_stderr ()
 #Function to display usage message
 function usage()
 {
-  echo_stderr "./configureCustomAdminSSL.sh <adminVMName> <wlsDomainName> <wlsUserName> <wlsPassword> <oracleHome> <wlsDomainPath> <managedServerPrefix> <numberOfExistingNodes> <isCoherenceEnabled> <numberOfCoherenceCacheInstances> <vmIndex> <enableAAD> <wlsADSSLCer> <isCustomSSLenabled> <customIdentityKeyStoreBase64String> <customIdentityKeyStorePassPhrase> <customIdentityKeyStoreType> <customTrustKeyStoreBase64String> <customTrustKeyStorePassPhrase> <customTrustKeyStoreType> <privateKeyAlias> <privateKeyPassPhrase>"
+  echo_stderr "./configureSSLForDCServerTemplate.sh <adminVMName> <wlsDomainName> <wlsUserName> <wlsPassword> <oracleHome> <wlsDomainPath> <managedServerPrefix> <numberOfExistingNodes> <isCoherenceEnabled> <numberOfCoherenceCacheInstances> <vmIndex> <enableAAD> <wlsADSSLCer> <isCustomSSLenabled> <customIdentityKeyStoreBase64String> <customIdentityKeyStorePassPhrase> <customIdentityKeyStoreType> <customTrustKeyStoreBase64String> <customTrustKeyStorePassPhrase> <customTrustKeyStoreType> <privateKeyAlias> <privateKeyPassPhrase>"
 }
 
 function validateInput()
@@ -564,13 +564,17 @@ sudo chown -R ${username}:${groupname} ${SCRIPT_PATH}
 
 validateInput
 cleanup
+parseAndSaveCustomSSLKeyStoreData
+
+if [ "$enableAAD" == "true" ];
+then
+    parseLDAPCertificate
+    importAADCertificateIntoWLSCustomTrustKeyStore
+fi
+
+configureSSLOnDynamicClusterServerTemplate
 
 wait_for_admin
-configureSSLOnAdminServer
-force_restart_admin
-restart_cluster_with_rolling_restart $clusterName
-wait_for_admin
-#validate_managed_servers
 
 cleanup
 
