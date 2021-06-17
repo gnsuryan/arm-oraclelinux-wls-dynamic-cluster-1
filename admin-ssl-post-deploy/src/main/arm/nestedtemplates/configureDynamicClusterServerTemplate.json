@@ -138,7 +138,7 @@
         },
         {
          "type": "Microsoft.Compute/virtualMachines/extensions",
-         "name": "[concat(parameters('adminVMName'),'/configureDynamicClusterServerTemplate')]",
+         "name": "[concat(parameters('adminVMName'),'/newuserscript')]",
          "condition": "[parameters('customSSLSettings').enable]",
          "apiVersion": "2020-06-01",
          "location": "[parameters('location')]",
