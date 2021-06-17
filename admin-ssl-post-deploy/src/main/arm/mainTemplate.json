@@ -237,7 +237,8 @@
 		"apiVersion": "2020-06-01",
 		"condition": "[parameters('customSSLSettings').enable]",
         "dependsOn": [
-            "[resourceId('Microsoft.Resources/deployments', 'configureSSLForAdminServerTemplate')]"
+            "[resourceId('Microsoft.Resources/deployments', 'configureSSLForDynamicClusterServerTemplate')]",
+            "[resourceId('Microsoft.Resources/deployments', 'configureSSLForManagedServerTemplate')]"
         ],
 		"properties": {
 			"mode": "Incremental",
@@ -288,7 +289,7 @@
          "name": "post.deploy.ssl.config.end",
          "dependsOn": [
             "[resourceId('Microsoft.Resources/deployments', 'configureSSLForDynamicClusterServerTemplate')]",
-            "[resourceId('Microsoft.Resources/deployments', 'configureSSLForManagedServerTemplate')]"
+            "[resourceId('Microsoft.Resources/deployments', 'configureSSLForManagedServerTemplate')]",
             "[resourceId('Microsoft.Resources/deployments', 'configureSSLForAdminServerTemplate')]"
          ],
          "properties": {
