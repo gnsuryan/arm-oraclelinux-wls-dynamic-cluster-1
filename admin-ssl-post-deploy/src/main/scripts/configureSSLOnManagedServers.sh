@@ -382,7 +382,7 @@ else
     wait_for_admin
 
     //run this script on only one managed Server VM
-    if { $vmIndex == 1 ];
+    if [ $vmIndex == 1 ];
     then
         configureSSLOnDynamicClusterServerTemplate
     else
