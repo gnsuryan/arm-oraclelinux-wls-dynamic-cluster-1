@@ -122,7 +122,8 @@
       "const_wlsDomainPath": "/u01/domains",
       "name_coherenceServerConfigScriptFile": "configureSSLOnCoherenceServers.sh",
       "name_managedServerConfigScriptFile": "configureSSLOnManagedServers.sh",
-      "name_adminServerConfigScriptFile": "configureSSLOnAdminServer.sh"
+      "name_adminServerSSLConfigScriptFile": "configureSSLOnAdminServer.sh",
+      "name_adminServerConfigDCServerTemplateScriptFile" : "configureSSLForDCServerTemplate.sh"
    },
    "resources": [
       {
@@ -136,6 +137,31 @@
                "contentVersion": "1.0.0.0",
                "resources": []
             }
+         }
+      },
+      {
+         "type": "Microsoft.Compute/virtualMachines/extensions",
+         "name": "[concat(parameters('adminVMName'),'/configureDCServerTemplate')]",
+         "condition": "[parameters('customSSLSettings').enable]",
+         "apiVersion": "2020-06-01",
+         "location": "[parameters('location')]",
+         "dependsOn": [
+               "coherenceVMExtensionLoop",
+               "managedVMExtensionLoop"
+         ],
+         "properties": {
+            "publisher": "Microsoft.Azure.Extensions",
+            "type": "CustomScript",
+            "typeHandlerVersion": "2.1",
+            "autoUpgradeMinorVersion": true,
+            "settings": {
+               "timestamp": "[int(parameters('deploy_timestamp'))]",
+               "fileUris": [
+                  "[uri(parameters('_artifactsLocation'), concat('scripts/', variables('name_adminServerConfigDCServerTemplateScriptFile'), parameters('_artifactsLocationSasToken')))]"
+               ]
+            },
+            "protectedSettings": {
+				"commandToExecute": "[concat('sh',' ',variables('name_adminServerConfigScriptFile'),' ',parameters('adminVMName'),' ',parameters('wlsDomainName'),' ',parameters('wlsUserName'),' ',parameters('wlsPassword'),' ',variables('const_wlsHome'),' ',variables('const_wlsDomainPath'),' ',parameters('managedServerPrefix'),' ',parameters('dynamicClusterSize'),' ',parameters('maxDynamicClusterSize'),' ',parameters('coherenceCacheSettings').enable,' ',if(parameters('coherenceCacheSettings').enable,parameters('coherenceCacheSettings').numberOfCoherenceCacheInstances,0),' ',parameters('aadsSettings').enable,' ',if(parameters('aadsSettings').enable, parameters('aadsSettings').certificateBase64String, 'null'),' ', parameters('customSSLSettings').enable,' ',if(parameters('customSSLSettings').enable,parameters('customSSLSettings').customIdentityKeyStoreBase64String, 'null'),' ',if(parameters('customSSLSettings').enable,parameters('customSSLSettings').customIdentityKeyStorePassPhrase, 'null'),' ',if(parameters('customSSLSettings').enable,parameters('customSSLSettings').customIdentityKeyStoreType, 'null'),' ',if(parameters('customSSLSettings').enable,parameters('customSSLSettings').customTrustKeyStoreBase64String, 'null'),' ',if(parameters('customSSLSettings').enable,parameters('customSSLSettings').customTrustKeyStorePassPhrase, 'null'),' ',if(parameters('customSSLSettings').enable,parameters('customSSLSettings').customTrustKeyStoreType, 'null'),' ',if(parameters('customSSLSettings').enable,parameters('customSSLSettings').privateKeyAlias, 'null'),' ',if(parameters('customSSLSettings').enable,parameters('customSSLSettings').privateKeyPassPhrase, 'null'))]"            }
          }
       },
       {
@@ -193,7 +219,7 @@
       },
       {
          "type": "Microsoft.Compute/virtualMachines/extensions",
-         "name": "[concat(parameters('adminVMName'),'/newuserscript')]",
+         "name": "[concat(parameters('adminVMName'),'/configureSSLOnAdminServer')]",
          "condition": "[parameters('customSSLSettings').enable]",
          "apiVersion": "2020-06-01",
          "location": "[parameters('location')]",
@@ -209,7 +235,7 @@
             "settings": {
                "timestamp": "[int(parameters('deploy_timestamp'))]",
                "fileUris": [
-                  "[uri(parameters('_artifactsLocation'), concat('scripts/', variables('name_adminServerConfigScriptFile'), parameters('_artifactsLocationSasToken')))]"
+                  "[uri(parameters('_artifactsLocation'), concat('scripts/', variables('name_adminServerSSLConfigScriptFile'), parameters('_artifactsLocationSasToken')))]"
                ]
             },
             "protectedSettings": {
