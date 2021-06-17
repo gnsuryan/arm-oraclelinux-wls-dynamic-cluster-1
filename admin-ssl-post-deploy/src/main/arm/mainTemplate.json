@@ -199,7 +199,7 @@
                 "count": "[parameters('dynamicClusterSize')]"
          },
          "dependsOn": [
-               "[resourceId('Microsoft.Compute/virtualMachines/extensions/', parameters('adminVMName'), 'configureSSLOnAdminServer')]",
+               "[resourceId('Microsoft.Compute/virtualMachines/extensions/', parameters('adminVMName'), 'configureDCServerTemplate')]",
                "coherenceVMExtensionLoop"
          ],
          "properties": {
@@ -248,10 +248,10 @@
          "apiVersion": "2020-06-01",
          "name": "post.deploy.ssl.config.end",
          "dependsOn": [
-             "[resourceId('Microsoft.Compute/virtualMachines/extensions/', parameters('adminVMName'), 'configureSSLOnAdminServer')]",
+            "[resourceId('Microsoft.Compute/virtualMachines/extensions/', parameters('adminVMName'), 'configureDCServerTemplate')]",
             "coherenceVMExtensionLoop",
-            "managedVMExtensionLoop"
-
+            "managedVMExtensionLoop",
+            "[resourceId('Microsoft.Compute/virtualMachines/extensions/', parameters('adminVMName'), 'configureSSLOnAdminServer')]",
          ],
          "properties": {
             "mode": "Incremental",
