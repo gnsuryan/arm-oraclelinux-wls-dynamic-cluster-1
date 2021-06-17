@@ -229,7 +229,7 @@
 					"value": "[parameters('customSSLSettings')]"
 				}
 			}
-		}
+		 }
 	  },
 	  {
 		"name": "configureSSLForAdminServerTemplate",
