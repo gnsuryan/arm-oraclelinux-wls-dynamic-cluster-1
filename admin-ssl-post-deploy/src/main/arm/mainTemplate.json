@@ -145,10 +145,6 @@
          "condition": "[parameters('customSSLSettings').enable]",
          "apiVersion": "2020-06-01",
          "location": "[parameters('location')]",
-         "dependsOn": [
-               "coherenceVMExtensionLoop",
-               "managedVMExtensionLoop"
-         ],
          "properties": {
             "publisher": "Microsoft.Azure.Extensions",
             "type": "CustomScript",
