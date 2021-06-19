@@ -379,9 +379,11 @@ fi
 function force_restart_admin()
 {
      echo "Force Restart AdminServer - first killing admin server process so that it gets restarted by the wls_admin service automatically"
+     echo "listing admin server process before force restart"
+     ps -ef|grep 'weblogic.Server'|grep -i 'weblogic.Name=admin'
      ps -ef|grep 'weblogic.Server'|grep 'weblogic.Name=admin' |awk '{ print $2; }'|head -n 1 | xargs kill -9
      sleep 5m
-     echo "listing admin server process"
+     echo "listing admin server process after force restart"
      ps -ef|grep 'weblogic.Server'|grep -i 'weblogic.Name=admin'
      wait_for_admin
 }
@@ -456,25 +458,6 @@ function validateSSLKeyStores()
 
 function parseAndSaveCustomSSLKeyStoreData()
 {
-    echo "create key stores for custom ssl settings"
-
-    mkdir -p ${KEYSTORE_PATH}
-    touch ${KEYSTORE_PATH}/identityKeyStoreCerBase64String.txt
-
-    echo "$customIdentityKeyStoreBase64String" > ${KEYSTORE_PATH}/identityKeyStoreCerBase64String.txt
-    cat ${KEYSTORE_PATH}/identityKeyStoreCerBase64String.txt | base64 -d > ${KEYSTORE_PATH}/identity.keystore
-    export customSSLIdentityKeyStoreFile=${KEYSTORE_PATH}/identity.keystore
-
-    rm -rf ${KEYSTORE_PATH}/identityKeyStoreCerBase64String.txt
-
-    mkdir -p ${KEYSTORE_PATH}
-    touch ${KEYSTORE_PATH}/trustKeyStoreCerBase64String.txt
-
-    echo "$customTrustKeyStoreBase64String" > ${KEYSTORE_PATH}/trustKeyStoreCerBase64String.txt
-    cat ${KEYSTORE_PATH}/trustKeyStoreCerBase64String.txt | base64 -d > ${KEYSTORE_PATH}/trust.keystore
-    export customSSLTrustKeyStoreFile=${KEYSTORE_PATH}/trust.keystore
-
-    rm -rf ${KEYSTORE_PATH}/trustKeyStoreCerBase64String.txt
 
     validateSSLKeyStores
 }
@@ -559,11 +542,15 @@ export dynamicClusterServerTemplate="myServerTemplate"
 export KEYSTORE_PATH="$wlsDomainPath/$wlsDomainName/keystores"
 export SCRIPT_PATH="/u01/app/scripts"
 
+export customSSLIdentityKeyStoreFile=${KEYSTORE_PATH}/identity.keystore
+export customSSLTrustKeyStoreFile=${KEYSTORE_PATH}/trust.keystore
+
 mkdir -p ${SCRIPT_PATH}
 sudo chown -R ${username}:${groupname} ${SCRIPT_PATH}
 
 validateInput
 cleanup
+validateSSLKeyStores
 
 wait_for_admin
 configureSSLOnAdminServer
