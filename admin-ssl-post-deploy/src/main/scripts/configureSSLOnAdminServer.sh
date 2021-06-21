@@ -581,7 +581,7 @@ configureSSLOnAdminServer
 force_restart_admin
 restart_cluster_with_rolling_restart $clusterName
 wait_for_admin
-#validate_managed_servers
+validate_managed_servers
 
 cleanup
 
