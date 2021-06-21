@@ -166,7 +166,7 @@
           "name": "post.deploy.ssl.config.dynamic.cluster.template.end",
           "dependsOn": [
             "[resourceId('Microsoft.Resources/deployments', 'post.deploy.ssl.config.dynamic.cluster.template.start')]",
-            "[resourceId('Microsoft.Resources/virtualMachines/extensions', parameters('adminVMName'),'newuserscript')]"
+            "[resourceId('Microsoft.Compute/virtualMachines/extensions', parameters('adminVMName'),'newuserscript')]"
           ],
           "properties": {
              "mode": "Incremental",
