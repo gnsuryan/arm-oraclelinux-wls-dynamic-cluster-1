@@ -259,6 +259,17 @@ function configureNodeManagerSSL()
  
     if [ "${isCustomSSLEnabled}" == "true" ];
     then
+
+        sed -i '/KeyStores=/d' $wlsDomainPath/$wlsDomainName/nodemanager/nodemanager.properties
+        sed -i '/CustomIdentityKeystoreType=/d' $wlsDomainPath/$wlsDomainName/nodemanager/nodemanager.properties
+        sed -i '/CustomIdentityKeyStoreFileName=/d' $wlsDomainPath/$wlsDomainName/nodemanager/nodemanager.properties
+        sed -i '/CustomIdentityKeyStorePassPhrase=/d' $wlsDomainPath/$wlsDomainName/nodemanager/nodemanager.properties
+        sed -i '/CustomIdentityAlias=/d' $wlsDomainPath/$wlsDomainName/nodemanager/nodemanager.properties
+        sed -i '/CustomIdentityPrivateKeyPassPhrase=/d' $wlsDomainPath/$wlsDomainName/nodemanager/nodemanager.properties
+        sed -i '/CustomTrustKeystoreType=/d' $wlsDomainPath/$wlsDomainName/nodemanager/nodemanager.properties
+        sed -i '/CustomTrustKeyStoreFileName=/d' $wlsDomainPath/$wlsDomainName/nodemanager/nodemanager.properties
+        sed -i '/CustomTrustKeyStorePassPhrase=/d' $wlsDomainPath/$wlsDomainName/nodemanager/nodemanager.properties
+
         echo "KeyStores=CustomIdentityAndCustomTrust" >> $wlsDomainPath/$wlsDomainName/nodemanager/nodemanager.properties
         echo "CustomIdentityKeystoreType=${customIdentityKeyStoreType}" >> $wlsDomainPath/$wlsDomainName/nodemanager/nodemanager.properties
         echo "CustomIdentityKeyStoreFileName=${customSSLIdentityKeyStoreFile}" >> $wlsDomainPath/$wlsDomainName/nodemanager/nodemanager.properties
@@ -274,11 +285,15 @@ function configureNodeManagerSSL()
 function restartNodeManagerService()
 {
      echo "Restart NodeManager - first killing nodemanager process so that it gets restarted by the nodemanager service automatically"
+     echo "listing nodemanager process before restart"
+     ps -ef|grep 'weblogic.NodeManager'|grep -i 'weblogic.nodemanager.JavaHome'
+
+
      #kill nodemanager process if not already stopped by nodemanager service
      ps -ef|grep 'weblogic.NodeManager'|awk '{ print $2; }'|head -n 1 | xargs kill -9
 
      sleep 1m
-     echo "listing nodemanager process"
+     echo "listing nodemanager process after restart"
      ps -ef|grep 'weblogic.NodeManager'|grep -i 'weblogic.nodemanager.JavaHome'
      if [ "$?" == "0" ];
      then

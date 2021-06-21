@@ -167,7 +167,7 @@ if isCustomSSLEnabled == 'true' :
     cmo.setHostnameVerificationIgnored(true)
 
 cd('/ServerTemplates/$dynamicClusterServerTemplate/ServerStart/$dynamicClusterServerTemplate')
-arguments = '-Dweblogic.Name=$wlsServerName  -Dweblogic.security.SSL.ignoreHostnameVerification=true'
+arguments = '-Dweblogic.security.SSL.ignoreHostnameVerification=true'
 cmo.setArguments(arguments)
 
 save()
