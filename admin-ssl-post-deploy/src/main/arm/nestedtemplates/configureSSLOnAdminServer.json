@@ -138,6 +138,9 @@
          "name": "[concat(parameters('adminVMName'),'/newuserscript')]",
          "condition": "[parameters('customSSLSettings').enable]",
          "apiVersion": "2020-06-01",
+         "dependsOn": [
+            "[resourceId('Microsoft.Resources/deployments', 'post.deploy.ssl.config.admin.server.start')]"
+         ],
          "location": "[parameters('location')]",
          "properties": {
             "publisher": "Microsoft.Azure.Extensions",
@@ -158,6 +161,10 @@
           "type": "Microsoft.Resources/deployments",
           "apiVersion": "2020-06-01",
           "name": "post.deploy.ssl.config.admin.server.end",
+          "dependsOn": [
+            "[resourceId('Microsoft.Resources/deployments', 'post.deploy.ssl.config.admin.server.start')]",
+            "[resourceId('Microsoft.Resources/virtualMachines/extensions', parameters('adminVMName'),'newuserscript')]"
+          ],
           "properties": {
              "mode": "Incremental",
              "template": {

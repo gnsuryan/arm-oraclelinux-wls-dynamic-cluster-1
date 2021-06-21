@@ -140,6 +140,9 @@
          "type": "Microsoft.Compute/virtualMachines/extensions",
          "name": "[concat(parameters('adminVMName'),'/newuserscript')]",
          "condition": "[parameters('customSSLSettings').enable]",
+         "dependsOn": [
+            "[resourceId('Microsoft.Resources/deployments', 'post.deploy.ssl.config.dynamic.cluster.template.start')]"
+         ],
          "apiVersion": "2020-06-01",
          "location": "[parameters('location')]",
          "properties": {
@@ -161,6 +164,10 @@
           "type": "Microsoft.Resources/deployments",
           "apiVersion": "2020-06-01",
           "name": "post.deploy.ssl.config.dynamic.cluster.template.end",
+          "dependsOn": [
+            "[resourceId('Microsoft.Resources/deployments', 'post.deploy.ssl.config.dynamic.cluster.template.start')]",
+            "[resourceId('Microsoft.Resources/virtualMachines/extensions', parameters('adminVMName'),'newuserscript')]"
+          ],
           "properties": {
              "mode": "Incremental",
              "template": {
