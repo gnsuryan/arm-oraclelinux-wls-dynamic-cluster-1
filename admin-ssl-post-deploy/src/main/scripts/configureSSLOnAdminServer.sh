@@ -263,18 +263,42 @@ fi
 
 function validate_managed_servers()
 {
-    echo "validate managed servers: $numberOfExistingNodes"
-    i=1
-    while [[ $i -le $numberOfExistingNodes ]]
-    do
-      managedServerVMName="${managedServerPrefix}VM${i}"
-      serverName="${managedServerPrefix}${i}"
-      readyURL="http://$managedServerVMName:$wlsManagedServerPort/weblogic/ready"
-      wait_for_server $readyURL $serverName
-      i=$((i+1))
-    done
     
-    echo "All Managed Servers started successfully"   
+WLS_REST_URL="http://$wlsAdminURL/management/weblogic/latest"
+
+restArgs=" -v --user ${wlsUserName}:${wlsPassword} -H X-Requested-By:MyClient -H Accept:application/json -H Content-Type:application/json"
+echo $restArgs
+echo curl $restArgs -X GET ${WLS_REST_URL}/domainRuntime/serverRuntimes?fields=defaultURL > out
+curl $restArgs -X GET ${WLS_REST_URL}/domainRuntime/serverRuntimes?fields=defaultURL > out
+if [[ $? != 0 ]];
+then
+    echo_stderr "REST query failed for servers"
+    exit 1
+fi
+
+msString=` cat out | grep defaultURL | grep -v "7001\|7005\|7501" | cut -f3 -d"/" `
+wlsClusterAddress=`echo $msString | sed 's/\" /,/g'`
+echo "$wlsClusterAddress"
+
+export WLS_CLUSTER_ADDRESS=${wlsClusterAddress::-1}
+
+# Test whether servers are reachable
+testClusterServers=$(echo ${WLS_CLUSTER_ADDRESS} | tr "," "\n")
+for server in $testClusterServers
+do
+    echo curl http://${server}/weblogic/ready
+    curl http://${server}/weblogic/ready
+    if [[ $? == 0 ]];
+    then
+        echo "${server} is reachable"
+    else
+        echo "Failed to get cluster address properly. Cluster address received: ${wlsClusterAddress}"
+        exit 1
+    fi
+done
+rm -f out
+
+echo "All Managed Servers started successfully"
 }
 
 function validate_coherence_servers()
