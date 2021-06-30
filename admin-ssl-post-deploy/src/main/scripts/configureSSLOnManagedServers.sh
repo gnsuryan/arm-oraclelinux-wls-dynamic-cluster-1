@@ -118,7 +118,7 @@ if isCustomSSLEnabled == 'true' :
     cmo.setHostnameVerificationIgnored(true)
 
 cd('/ServerTemplates/$dynamicClusterServerTemplate/ServerStart/$dynamicClusterServerTemplate')
-arguments = '-Dweblogic.Name=$wlsServerName  -Dweblogic.security.SSL.ignoreHostnameVerification=true'
+arguments = '-Dweblogic.Name=$wlsServerName  -Dweblogic.security.SSL.ignoreHostnameVerification=true -Dweblogic.management.server=http://$wlsAdminURL ${wlsCoherenceArgs}'
 cmo.setArguments(arguments)
 
 save()
@@ -370,6 +370,9 @@ export wlsAdminSSLPort=7002
 export wlsAdminChannelPort=7005
 export wlsCoherenceServerPort=7501
 export wlsAdminURL="$adminVMName:$wlsAdminChannelPort"
+
+export coherenceDebugSettings="-Djavax.net.debug=ssl,handshake -Dcoherence.log.level=9"
+export wlsCoherenceArgs="-Dcoherence.localport=$coherenceLocalport -Dcoherence.localport.adjust=$coherenceLocalportAdjust"
 
 export username="oracle"
 export groupname="oracle"
