@@ -223,9 +223,12 @@
                 "managedServerPrefix": {
                     "value": "[parameters('managedServerPrefix')]"
                 },
-                "numberOfExistingNodes": {
-                    "value": "[parameters('numberOfExistingNodes')]"
-                },
+				"dynamicClusterSize": {
+					"value": "[parameters('dynamicClusterSize')]"
+				},
+				"maxDynamicClusterSize": {
+					"value": "[parameters('maxDynamicClusterSize')]"
+				},
                 "coherenceCacheSettings": {
                     "value": "[parameters('coherenceCacheSettings')]"
                 },

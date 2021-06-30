@@ -66,14 +66,18 @@
             "description": "Provide managed server prefix"
          }
       },
-      "numberOfExistingNodes": {
-         "type": "int",
-         "minValue": 1,
-         "maxValue": 20,
-         "metadata": {
-            "description": "The number of existing application managed servers."
-         }
-      },
+      "dynamicClusterSize": {
+			"type": "int",
+			"metadata": {
+				"description": "Initial Number of Managed Servers that has been configured in the Dynamic Cluster"
+			}
+	  },
+      "maxDynamicClusterSize":{
+			"type": "int",
+			"metadata": {
+				"description": "Maximum Number of Managed Servers allowed to be configured in the Dynamic Cluster"
+			}
+	  },
       "coherenceCacheSettings": {
          "type": "object",
          "defaultValue": {
