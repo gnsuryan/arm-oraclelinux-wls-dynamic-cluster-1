@@ -115,6 +115,7 @@
    },
    "variables": {
       "name_dynamicClusterServerTemplate" : "configureDynamicClusterServerTemplate.json",
+      "name_coherenceServerTemplate" : "configureSSLOnCoherenceServers.json",
       "name_managedServerTemplate" : "configureSSLOnManagedServers.json",
       "name_adminServerTemplate" : "configureSSLOnAdminServer.json"
    },
@@ -186,6 +187,54 @@
 			}
 		}
 	  },
+      {
+        "name": "configureSSLForCoherenceServerTemplate",
+        "type": "Microsoft.Resources/deployments",
+        "apiVersion": "2020-06-01",
+        "condition": "[and(parameters('customSSLSettings').enable,parameters('coherenceCacheSettings').enable)]",
+        "properties": {
+            "mode": "Incremental",
+            "templateLink": {
+                "uri": "[uri(parameters('_artifactsLocation'), concat('arm/nestedtemplates/', variables('name_coherenceServerTemplate')))]",
+                "contentVersion": "1.0.0.0"
+            },
+            "parameters": {
+                "_artifactsLocation": {
+                    "value": "[parameters('_artifactsLocation')]"
+                },
+                "_artifactsLocationSasToken": {
+                    "value": "[parameters('_artifactsLocationSasToken')]"
+                },
+                "adminVMName": {
+                    "value": "[parameters('adminVMName')]"
+                },
+                "location": {
+                    "value": "[parameters('location')]"
+                },
+                "wlsDomainName": {
+                    "value": "[parameters('wlsDomainName')]"
+                },
+                "wlsUserName": {
+                    "value": "[parameters('wlsUserName')]"
+                },
+                "wlsPassword": {
+                    "value": "[parameters('wlsPassword')]"
+                },
+                "managedServerPrefix": {
+                    "value": "[parameters('managedServerPrefix')]"
+                },
+                "numberOfExistingNodes": {
+                    "value": "[parameters('numberOfExistingNodes')]"
+                },
+                "coherenceCacheSettings": {
+                    "value": "[parameters('coherenceCacheSettings')]"
+                },
+                "customSSLSettings": {
+                    "value": "[parameters('customSSLSettings')]"
+                }
+             }
+          }
+      },
 	  {
 		"name": "configureSSLForManagedServerTemplate",
 		"type": "Microsoft.Resources/deployments",
