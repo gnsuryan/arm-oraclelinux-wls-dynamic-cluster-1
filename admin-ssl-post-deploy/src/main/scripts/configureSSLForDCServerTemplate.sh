@@ -91,55 +91,6 @@ function cleanup()
 }
 
 #configure SSL on Admin Server
-function configureSSLOnAdminServer()
-{
-    echo "Configuring SSL on Server: $wlsServerName"
-    cat <<EOF >${SCRIPT_PATH}/configureSSL.py
-
-isCustomSSLEnabled='${isCustomSSLEnabled}'
-
-connect('$wlsUserName','$wlsPassword','t3://$wlsAdminURL')
-edit("$wlsServerName")
-startEdit()
-cd('/Servers/$wlsServerName')
-
-if isCustomSSLEnabled == 'true' :
-    cmo.setKeyStores('CustomIdentityAndCustomTrust')
-    cmo.setCustomIdentityKeyStoreFileName('$customSSLIdentityKeyStoreFile')
-    cmo.setCustomIdentityKeyStoreType('$customIdentityKeyStoreType')
-    set('CustomIdentityKeyStorePassPhrase', '$customIdentityKeyStorePassPhrase')
-    cmo.setCustomTrustKeyStoreFileName('$customSSLTrustKeyStoreFile')
-    cmo.setCustomTrustKeyStoreType('$customTrustKeyStoreType')
-    set('CustomTrustKeyStorePassPhrase', '$customTrustKeyStorePassPhrase')
-
-    cd('/Servers/$wlsServerName/SSL/$wlsServerName')
-    cmo.setServerPrivateKeyAlias('$privateKeyAlias')
-    set('ServerPrivateKeyPassPhrase', '$privateKeyPassPhrase')
-    cmo.setHostnameVerificationIgnored(true)
-
-cd('/Servers/$wlsServerName/ServerStart/$wlsServerName')
-arguments = '-Dweblogic.Name=$wlsServerName  -Dweblogic.security.SSL.ignoreHostnameVerification=true'
-cmo.setArguments(arguments)
-
-save()
-resolve()
-activate()
-destroyEditSession("$wlsServerName")
-disconnect()
-EOF
-
-sudo chown -R $username:$groupname ${SCRIPT_PATH}/configureSSL.py
-
-echo "Running wlst script to configure SSL on $wlsServerName"
-runuser -l oracle -c ". $oracleHome/oracle_common/common/bin/setWlstEnv.sh; java $WLST_ARGS weblogic.WLST ${SCRIPT_PATH}/configureSSL.py"
-if [[ $? != 0 ]]; then
-     echo "Error : SSL Configuration for server $wlsServerName failed"
-     exit 1
-fi
-
-}
-
-#configure SSL on Admin Server
 function configureSSLOnDynamicClusterServerTemplate()
 {
     echo "Configuring SSL on Dynamic Cluster Server Template"
@@ -374,16 +325,6 @@ if [[ $? != 0 ]]; then
      exit 1
 fi
   
-}
-
-function force_restart_admin()
-{
-     echo "Force Restart AdminServer - first killing admin server process so that it gets restarted by the wls_admin service automatically"
-     ps -ef|grep 'weblogic.Server'|grep 'weblogic.Name=admin' |awk '{ print $2; }'|head -n 1 | xargs kill -9
-     sleep 5m
-     echo "listing admin server process"
-     ps -ef|grep 'weblogic.Server'|grep -i 'weblogic.Name=admin'
-     wait_for_admin
 }
 
 function parseLDAPCertificate()
