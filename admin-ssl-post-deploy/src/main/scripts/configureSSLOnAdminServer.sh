@@ -582,7 +582,7 @@ force_restart_admin
 
 if [ "$isCoherenceEnabled" == "true" ];
 then
-    restart_domain_with_rolling_restart $coherenceClusterName
+    restart_cluster_with_rolling_restart $coherenceClusterName
 fi
 
 restart_cluster_with_rolling_restart $clusterName

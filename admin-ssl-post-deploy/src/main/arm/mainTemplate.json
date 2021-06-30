@@ -192,6 +192,9 @@
         "type": "Microsoft.Resources/deployments",
         "apiVersion": "2020-06-01",
         "condition": "[and(parameters('customSSLSettings').enable,parameters('coherenceCacheSettings').enable)]",
+        "dependsOn": [
+            "[resourceId('Microsoft.Resources/deployments', 'configureSSLForDynamicClusterServerTemplate')]"
+        ],
         "properties": {
             "mode": "Incremental",
             "templateLink": {
@@ -244,7 +247,8 @@
 		"apiVersion": "2020-06-01",
 		"condition": "[parameters('customSSLSettings').enable]",
         "dependsOn": [
-            "[resourceId('Microsoft.Resources/deployments', 'configureSSLForDynamicClusterServerTemplate')]"
+            "[resourceId('Microsoft.Resources/deployments', 'configureSSLForDynamicClusterServerTemplate')]",
+            "[resourceId('Microsoft.Resources/deployments', 'configureSSLForCoherenceServerTemplate')]"
         ],
 		"properties": {
 			"mode": "Incremental",
@@ -302,6 +306,7 @@
 		"condition": "[parameters('customSSLSettings').enable]",
         "dependsOn": [
             "[resourceId('Microsoft.Resources/deployments', 'configureSSLForDynamicClusterServerTemplate')]",
+            "[resourceId('Microsoft.Resources/deployments', 'configureSSLForCoherenceServerTemplate')]",
             "[resourceId('Microsoft.Resources/deployments', 'configureSSLForManagedServerTemplate')]"
         ],
 		"properties": {
