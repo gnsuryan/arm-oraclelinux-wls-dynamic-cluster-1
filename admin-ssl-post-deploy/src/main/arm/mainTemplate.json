@@ -178,9 +178,6 @@
 				"maxDynamicClusterSize": {
 					"value": "[parameters('maxDynamicClusterSize')]"
 				},
-				"coherenceCacheSettings": {
-					"value": "[parameters('coherenceCacheSettings')]"
-				},
 				"customSSLSettings": {
 					"value": "[parameters('customSSLSettings')]"
 				}
@@ -226,12 +223,12 @@
                 "managedServerPrefix": {
                     "value": "[parameters('managedServerPrefix')]"
                 },
-				"dynamicClusterSize": {
-					"value": "[parameters('dynamicClusterSize')]"
-				},
-				"maxDynamicClusterSize": {
-					"value": "[parameters('maxDynamicClusterSize')]"
-				},
+                "dynamicClusterSize": {
+                  "value": "[parameters('dynamicClusterSize')]"
+                },
+                "maxDynamicClusterSize": {
+                  "value": "[parameters('maxDynamicClusterSize')]"
+                },
                 "coherenceCacheSettings": {
                     "value": "[parameters('coherenceCacheSettings')]"
                 },
@@ -324,9 +321,6 @@
                 },
 				"adminVMName": {
 					"value": "[parameters('adminVMName')]"
-				},
-				"aadsSettings": {
-					"value": "[parameters('aadsSettings')]"
 				},
 				"location": {
 					"value": "[parameters('location')]"

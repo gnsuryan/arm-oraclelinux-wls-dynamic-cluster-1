@@ -10,7 +10,7 @@ function echo_stderr ()
 #Function to display usage message
 function usage()
 {
-  echo_stderr "./configureCustomAdminSSL.sh <adminVMName> <wlsDomainName> <wlsUserName> <wlsPassword> <oracleHome> <wlsDomainPath> <managedServerPrefix> <numberOfExistingNodes> <isCoherenceEnabled> <numberOfCoherenceCacheInstances> <vmIndex> <enableAAD> <wlsADSSLCer> <isCustomSSLenabled> <customIdentityKeyStoreBase64String> <customIdentityKeyStorePassPhrase> <customIdentityKeyStoreType> <customTrustKeyStoreBase64String> <customTrustKeyStorePassPhrase> <customTrustKeyStoreType> <privateKeyAlias> <privateKeyPassPhrase>"
+  echo_stderr "./configureCustomAdminSSL.sh <adminVMName> <wlsDomainName> <wlsUserName> <wlsPassword> <oracleHome> <wlsDomainPath> <managedServerPrefix> <numberOfExistingNodes> <isCoherenceEnabled> <numberOfCoherenceCacheInstances> <vmIndex> <isCustomSSLenabled> <customIdentityKeyStoreBase64String> <customIdentityKeyStorePassPhrase> <customIdentityKeyStoreType> <customTrustKeyStoreBase64String> <customTrustKeyStorePassPhrase> <customTrustKeyStoreType> <privateKeyAlias> <privateKeyPassPhrase>"
 }
 
 function validateInput()
@@ -38,14 +38,6 @@ function validateInput()
     if [ -z "$wlsDomainPath" ];
     then
         echo_stderr "wlsDomainPath is required. "
-    fi
-
-    if [[ "$enableAAD" == "true" ]];
-    then
-        if [[ -z "$wlsADSSLCer" ]]
-        then
-            echo_stderr "wlsADSSLCer is required. "
-        fi
     fi
 
     if [[ -z "$managedServerPrefix" ]];
@@ -526,27 +518,21 @@ isCoherenceEnabled="${isCoherenceEnabled,,}"
 export numberOfCoherenceCacheInstances="${11}"
 
 wlsServerName="admin"
-
 echo "ServerName: $wlsServerName"
 
-export enableAAD="${12}"
-enableAAD="${enableAAD,,}"
-
-export wlsADSSLCer="${13}"
-
-export isCustomSSLEnabled="${14}"
+export isCustomSSLEnabled="${13}"
 isCustomSSLEnabled="${isCustomSSLEnabled,,}"
 
 if [ "${isCustomSSLEnabled,,}" == "true" ];
 then
-    export customIdentityKeyStoreBase64String="${15}"
-    export customIdentityKeyStorePassPhrase="${16}"
-    export customIdentityKeyStoreType="${17}"
-    export customTrustKeyStoreBase64String="${18}"
-    export customTrustKeyStorePassPhrase="${19}"
-    export customTrustKeyStoreType="${20}"
-    export privateKeyAlias="${21}"
-    export privateKeyPassPhrase="${22}"
+    export customIdentityKeyStoreBase64String="${14}"
+    export customIdentityKeyStorePassPhrase="${15}"
+    export customIdentityKeyStoreType="${16}"
+    export customTrustKeyStoreBase64String="${17}"
+    export customTrustKeyStorePassPhrase="${18}"
+    export customTrustKeyStoreType="${19}"
+    export privateKeyAlias="${20}"
+    export privateKeyPassPhrase="${21}"
 fi
 
 export wlsAdminPort=7001

@@ -53,16 +53,6 @@ function validateInput()
         echo_stderr "managedServerPrefix is required. "
     fi
 
-    if [[ -z "$isCoherenceEnabled" ]];
-    then
-        echo_stderr "wlsADSSLCer is required. "
-    fi
-
-    if [[ -z "$numberOfCoherenceCacheInstances" ]];
-    then
-        echo_stderr "numberOfCoherenceCacheInstances is required. "
-    fi
-
     if [ "$isCustomSSLEnabled" == "true" ];
     then
         if [[ -z "$customIdentityKeyStoreBase64String" || -z "$customIdentityKeyStorePassPhrase"  || -z "$customIdentityKeyStoreType" ||
@@ -175,157 +165,6 @@ else
 fi
 }
 
-
-#This function to wait for managed/coherence server to start
-function wait_for_server()
-{
-echo "Waiting for managed server $serverName to start"
-count=1
-export CHECK_URL="$1"
-export serverName="$2"
-echo "verifying if $serverName is available by verifying URL: $CHECK_URL"
-status=`curl --insecure -ILs $CHECK_URL | tac | grep -m1 HTTP/1.1 | awk {'print $2'}`
-
-if [ "$status" == "200" ];
-then
-    echo "Server $serverName started succesfully..."
-    return
-else
-    while [[ "$status" != "200" ]]
-    do
-      echo "managed/coherence server: $serverName - still not reachable at $CHECK_URL .. $count"
-      count=$((count+1))
-      if [ $count -le 10 ];
-      then
-          sleep 2m
-      else
-            echo "Failed to reach server $serverName even after maximum attempts"
-            exit 1
-      fi
-      status=`curl --insecure -ILs $CHECK_URL | tac | grep -m1 HTTP/1.1 | awk {'print $2'}`
-      if [ "$status" == "200" ];
-      then
-         echo "Server $serverName started succesfully..."
-         break
-      fi
-    done
-fi
-}
-
-function validate_managed_servers()
-{
-    echo "validate managed servers: $numberOfExistingNodes"
-    i=1
-    while [[ $i -le $numberOfExistingNodes ]]
-    do
-      managedServerVMName="${managedServerPrefix}VM${i}"
-      serverName="${managedServerPrefix}${i}"
-      readyURL="http://$managedServerVMName:$wlsManagedServerPort/weblogic/ready"
-      wait_for_server $readyURL $serverName
-      i=$((i+1))
-    done
-    
-    echo "All Managed Servers started successfully"   
-}
-
-function validate_coherence_servers()
-{
-    echo "validate coherence servers: $numberOfCoherenceCacheInstances"
-    j=1
-    while [[ $j -le $numberOfCoherenceCacheInstances ]]
-    do
-      coherenceServerVMName="${coherenceServerPrefix}VM${j}"
-      serverName="${coherenceServerPrefix}${j}"
-      readyURL=http://$coherenceServerVMName:$wlsCoherenceServerPort/weblogic/ready
-      wait_for_server $readyURL $serverName
-      j=$((j+1))
-    done
-    
-    echo "All Coherence Servers started successfully"   
-}
-
-# restart servers using rolling restart
-function restart_cluster_with_rolling_restart() 
-{
-
-target="$1"
-echo "Restart cluster $target using Rolling Restart WLST function"
-cat <<EOF >${SCRIPT_PATH}/rolling_restart_$target.py
-
-import sys, socket
-import os
-import time
-from java.util import Date
-from java.text import SimpleDateFormat
-
-### MAIN 
-argTarget='$target'
-
-try:
-   connect('$wlsUserName','$wlsPassword','t3://$wlsAdminURL')
-   progress = rollingRestart(argTarget, options='isDryRun=false,shutdownTimeout=30,isAutoRevertOnFailure=true')
-   lastProgressString = ""
-
-   progressString=progress.getProgressString()
-   steps=progressString.split('/')
-
-   while not (steps[0].strip() == steps[1].strip()):
-     if not (progressString == lastProgressString):
-       print "Completed step " + steps[0].strip() + " of " + steps[1].strip() + " total steps"
-       lastProgressString = progressString
-
-     java.lang.Thread.sleep(1000)
-
-     progressString=progress.getProgressString()
-     steps=progressString.split('/')
-     if(len(steps) == 1):
-       print steps[0]
-       break;
-
-   if(len(steps) == 2):
-     print "Completed step " + steps[0].strip() + " of " + steps[1].strip() + " total steps"
-
-   t = Date()
-   endTime=SimpleDateFormat("hh:mm:ss").format(t)
-
-   print ""
-   print "RolloutDirectory task finished at " + endTime
-   print ""
-   viewMBean(progress)
-
-   state = progress.getStatus()
-   error = progress.getError()
-   #TODO: better error handling with the progress.getError obj and msg
-   # not a string, can raise directly
-   stateString = '%s' % state   
-   if stateString != 'SUCCESS':
-     #msg = 'State is %s and error is: %s' % (state,error)
-     msg = "State is: " + state
-     raise(msg)
-   elif error is not None:
-     msg = "Error not null for state: " + state
-     print msg
-     #raise("Error not null for state: %s and error is: %s" + (state,error))
-     raise(error)  
-except Exception, e:
-  e.printStackTrace()
-  dumpStack()
-  raise("Rollout failed")
-
-exit()
-
-EOF
-
-sudo chown -R $username:$groupname ${SCRIPT_PATH}/rolling_restart_$target.py
-
-echo "Running wlst script to kickoff rolling restart for Domain $wlsDomainName"
-runuser -l oracle -c ". $oracleHome/oracle_common/common/bin/setWlstEnv.sh; java $WLST_ARGS weblogic.WLST ${SCRIPT_PATH}/rolling_restart_$target.py"
-if [[ $? != 0 ]]; then
-     echo "Error : Rolling Restart failed"
-     exit 1
-fi
-  
-}
 
 function parseLDAPCertificate()
 {
@@ -454,33 +293,26 @@ export coherenceServerPrefix="${managedServerPrefix}Storage"
 export dynamicClusterSize="${8}"
 export maxDynamicClusterSize="${9}"
 
-export isCoherenceEnabled="${10}"
-isCoherenceEnabled="${isCoherenceEnabled,,}"
-
-export numberOfCoherenceCacheInstances="${11}"
-
 wlsServerName="admin"
 
-echo "ServerName: $wlsServerName"
-
-export enableAAD="${12}"
+export enableAAD="${10}"
 enableAAD="${enableAAD,,}"
 
-export wlsADSSLCer="${13}"
+export wlsADSSLCer="${11}"
 
-export isCustomSSLEnabled="${14}"
+export isCustomSSLEnabled="${12}"
 isCustomSSLEnabled="${isCustomSSLEnabled,,}"
 
 if [ "${isCustomSSLEnabled,,}" == "true" ];
 then
-    export customIdentityKeyStoreBase64String="${15}"
-    export customIdentityKeyStorePassPhrase="${16}"
-    export customIdentityKeyStoreType="${17}"
-    export customTrustKeyStoreBase64String="${18}"
-    export customTrustKeyStorePassPhrase="${19}"
-    export customTrustKeyStoreType="${20}"
-    export privateKeyAlias="${21}"
-    export privateKeyPassPhrase="${22}"
+    export customIdentityKeyStoreBase64String="${13}"
+    export customIdentityKeyStorePassPhrase="${14}"
+    export customIdentityKeyStoreType="${15}"
+    export customTrustKeyStoreBase64String="${16}"
+    export customTrustKeyStorePassPhrase="${17}"
+    export customTrustKeyStoreType="${18}"
+    export privateKeyAlias="${19}"
+    export privateKeyPassPhrase="${20}"
 fi
 
 export wlsAdminPort=7001

@@ -40,14 +40,6 @@ function validateInput()
         echo_stderr "wlsDomainPath is required. "
     fi
 
-    if [[ "$enableAAD" == "true" ]];
-    then
-        if [[ -z "$wlsADSSLCer" ]]
-        then
-            echo_stderr "wlsADSSLCer is required. "
-        fi
-    fi
-
     if [[ -z "$coherenceServerVMName" ]];
     then
         echo_stderr "coherenceServerVMName is required. "
@@ -170,41 +162,6 @@ do
      break
   fi
 done  
-}
-
-
-#This function to wait for managed server
-function wait_for_managed_server()
-{
-count=1
-export CHECK_URL="http://$coherenceServerVMName:$wlsCoherenceServerPort/weblogic/ready"
-status=`curl --insecure -ILs $CHECK_URL | tac | grep -m1 HTTP/1.1 | awk {'print $2'}`
-echo "Waiting for managed server $wlsServerName to start"
-
-if [ "$status" == "200" ];
-then
-    echo "Server $wlsServerName started succesfully..."
-    break
-else
-    while [[ "$status" != "200" ]]
-    do
-      echo "."
-      count=$((count+1))
-      if [ $count -le 10 ];
-      then
-          sleep 1m
-      else
-            echo "Failed to reach server $wlsServerName even after maximum attemps"
-            exit 1
-      fi
-      status=`curl --insecure -ILs $CHECK_URL | tac | grep -m1 HTTP/1.1 | awk {'print $2'}`
-      if [ "$status" == "200" ];
-      then
-         echo "Server $wlsServerName started succesfully..."
-         break
-      fi
-    done
-fi
 }
 
 

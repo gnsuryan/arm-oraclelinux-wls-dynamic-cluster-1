@@ -40,14 +40,6 @@ function validateInput()
         echo_stderr "wlsDomainPath is required. "
     fi
 
-    if [[ "$enableAAD" == "true" ]];
-    then
-        if [[ -z "$wlsADSSLCer" ]]
-        then
-            echo_stderr "wlsADSSLCer is required. "
-        fi
-    fi
-
     if [[ -z "$managedServerVMName" ]];
     then
         echo_stderr "managedServerVMName is required. "
@@ -90,56 +82,6 @@ function cleanup()
     echo "Cleanup completed."
 }
 
-#configure SSL on Admin Server
-function configureSSLOnDynamicClusterServerTemplate()
-{
-    echo "Configuring SSL on Dynamic Cluster Server Template"
-    cat <<EOF >${SCRIPT_PATH}/configureSSLServerTemplate.py
-
-isCustomSSLEnabled='${isCustomSSLEnabled}'
-
-connect('$wlsUserName','$wlsPassword','t3://$wlsAdminURL')
-edit("$dynamicClusterServerTemplate")
-startEdit()
-
-if isCustomSSLEnabled == 'true' :
-    cd('/ServerTemplates/$dynamicClusterServerTemplate')
-    cmo.setKeyStores('CustomIdentityAndCustomTrust')
-    cmo.setCustomIdentityKeyStoreFileName('$customSSLIdentityKeyStoreFile')
-    cmo.setCustomIdentityKeyStoreType('$customIdentityKeyStoreType')
-    set('CustomIdentityKeyStorePassPhrase', '$customIdentityKeyStorePassPhrase')
-    cmo.setCustomTrustKeyStoreFileName('$customSSLTrustKeyStoreFile')
-    cmo.setCustomTrustKeyStoreType('$customTrustKeyStoreType')
-    set('CustomTrustKeyStorePassPhrase', '$customTrustKeyStorePassPhrase')
-
-    cd('/ServerTemplates/$dynamicClusterServerTemplate/SSL/$dynamicClusterServerTemplate')
-    cmo.setServerPrivateKeyAlias('$privateKeyAlias')
-    set('ServerPrivateKeyPassPhrase', '$privateKeyPassPhrase')
-    cmo.setHostnameVerificationIgnored(true)
-
-cd('/ServerTemplates/$dynamicClusterServerTemplate/ServerStart/$dynamicClusterServerTemplate')
-arguments = '-Dweblogic.Name=$wlsServerName  -Dweblogic.security.SSL.ignoreHostnameVerification=true -Dweblogic.management.server=http://$wlsAdminURL ${wlsCoherenceArgs}'
-cmo.setArguments(arguments)
-
-save()
-resolve()
-activate()
-destroyEditSession("$dynamicClusterServerTemplate")
-disconnect()
-EOF
-
-sudo chown -R $username:$groupname ${SCRIPT_PATH}/configureSSLServerTemplate.py
-
-echo "Running wlst script to configure SSL on $dynamicClusterServerTemplate"
-runuser -l oracle -c ". $oracleHome/oracle_common/common/bin/setWlstEnv.sh; java $WLST_ARGS weblogic.WLST ${SCRIPT_PATH}/configureSSLServerTemplate.py"
-if [[ $? != 0 ]]; then
-     echo "Error : SSL Configuration for $dynamicClusterServerTemplate failed"
-     exit 1
-fi
-
-}
-
-
 #This function to wait for admin server 
 function wait_for_admin()
 {
@@ -166,41 +108,6 @@ do
      break
   fi
 done  
-}
-
-
-#This function to wait for managed server
-function wait_for_managed_server()
-{
-count=1
-export CHECK_URL="http://$coherenceServerVMName:$wlsCoherenceServerPort/weblogic/ready"
-status=`curl --insecure -ILs $CHECK_URL | tac | grep -m1 HTTP/1.1 | awk {'print $2'}`
-echo "Waiting for managed server $wlsServerName to start"
-
-if [ "$status" == "200" ];
-then
-    echo "Server $wlsServerName started succesfully..."
-    break
-else
-    while [[ "$status" != "200" ]]
-    do
-      echo "."
-      count=$((count+1))
-      if [ $count -le 10 ];
-      then
-          sleep 1m
-      else
-            echo "Failed to reach server $wlsServerName even after maximum attemps"
-            exit 1
-      fi
-      status=`curl --insecure -ILs $CHECK_URL | tac | grep -m1 HTTP/1.1 | awk {'print $2'}`
-      if [ "$status" == "200" ];
-      then
-         echo "Server $wlsServerName started succesfully..."
-         break
-      fi
-    done
-fi
 }
 
 
@@ -390,7 +297,7 @@ export SCRIPT_PATH="/u01/app/scripts"
 mkdir -p ${SCRIPT_PATH}
 sudo chown -R ${username}:${groupname} ${SCRIPT_PATH}
 
-#if vmIndex is 0, the script is running on admin server, else on coherence/managed server
+#if vmIndex is 0, the script is running on admin server, else on managed server
 if [ $vmIndex == 0 ];
 then
     echo "This script is configured to run only on managedServer VM. So, exiting the script as it is running on Admin Server VM"
