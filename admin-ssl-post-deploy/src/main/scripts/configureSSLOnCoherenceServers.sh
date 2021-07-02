@@ -141,7 +141,7 @@ function wait_for_admin()
 {
  #wait for admin to start
 count=1
-export CHECK_URL="http://$adminVMName:$wlsAdminChannelPort/weblogic/ready"
+CHECK_URL="http://$adminVMName:$wlsAdminChannelPort/weblogic/ready"
 status=`curl --insecure -ILs $CHECK_URL | tac | grep -m1 HTTP/1.1 | awk {'print $2'}`
 echo "Waiting for admin server to start"
 while [[ "$status" != "200" ]]
@@ -197,7 +197,7 @@ function parseAndSaveCustomSSLKeyStoreData()
 
     echo "$customIdentityKeyStoreBase64String" > ${KEYSTORE_PATH}/identityKeyStoreCerBase64String.txt
     cat ${KEYSTORE_PATH}/identityKeyStoreCerBase64String.txt | base64 -d > ${KEYSTORE_PATH}/identity.keystore
-    export customSSLIdentityKeyStoreFile=${KEYSTORE_PATH}/identity.keystore
+    customSSLIdentityKeyStoreFile=${KEYSTORE_PATH}/identity.keystore
 
     rm -rf ${KEYSTORE_PATH}/identityKeyStoreCerBase64String.txt
 
@@ -206,7 +206,7 @@ function parseAndSaveCustomSSLKeyStoreData()
 
     echo "$customTrustKeyStoreBase64String" > ${KEYSTORE_PATH}/trustKeyStoreCerBase64String.txt
     cat ${KEYSTORE_PATH}/trustKeyStoreCerBase64String.txt | base64 -d > ${KEYSTORE_PATH}/trust.keystore
-    export customSSLTrustKeyStoreFile=${KEYSTORE_PATH}/trust.keystore
+    customSSLTrustKeyStoreFile=${KEYSTORE_PATH}/trust.keystore
 
     rm -rf ${KEYSTORE_PATH}/trustKeyStoreCerBase64String.txt
 
@@ -264,7 +264,7 @@ function restartNodeManagerService()
 
 #main script starts here
 
-export SCRIPT_PWD=`pwd`
+SCRIPT_PWD=`pwd`
 
 # store arguments in a special array 
 args=("$@") 
@@ -273,34 +273,34 @@ ELEMENTS=${#args[@]}
  
 # echo each element in array  
 # for loop 
-for (( i=0;i<$ELEMENTS;i++)); do 
-    echo "ARG[${args[${i}]}]"
-done
+#for (( i=0;i<$ELEMENTS;i++)); do 
+#    echo "ARG[${args[${i}]}]"
+#done
 
 if [ $# -lt 15 ]
 then
     usage
     exit 1
 fi
-export wlsServerName="admin"
+wlsServerName="admin"
 
-export adminVMName=$1
-export wlsDomainName=$2
-export wlsUserName=$3
-export wlsPassword=$4
-export oracleHome=$5
-export wlsDomainPath=$6
+adminVMName=$1
+wlsDomainName=$2
+wlsUserName=$3
+wlsPassword=$4
+oracleHome=$5
+wlsDomainPath=$6
 
-export coherenceServerVMName="${7}"
+coherenceServerVMName="${7}"
 
-export coherenceServerPrefix=${8}
+coherenceServerPrefix=${8}
 
-export isCoherenceEnabled="${9}"
+isCoherenceEnabled="${9}"
 isCoherenceEnabled="${isCoherenceEnabled,,}"
 
-export numberOfCoherenceCacheInstances="${10}"
+numberOfCoherenceCacheInstances="${10}"
 
-export vmIndex="${11}"
+vmIndex="${11}"
 
 if [ $vmIndex == 0 ];
 then
@@ -311,38 +311,38 @@ fi
 
 echo "ServerName: $wlsServerName"
 
-export isCustomSSLEnabled="${12}"
+isCustomSSLEnabled="${12}"
 isCustomSSLEnabled="${isCustomSSLEnabled,,}"
 
 if [ "${isCustomSSLEnabled,,}" == "true" ];
 then
-    export customIdentityKeyStoreBase64String="${13}"
-    export customIdentityKeyStorePassPhrase="${14}"
-    export customIdentityKeyStoreType="${15}"
-    export customTrustKeyStoreBase64String="${16}"
-    export customTrustKeyStorePassPhrase="${17}"
-    export customTrustKeyStoreType="${18}"
-    export privateKeyAlias="${19}"
-    export privateKeyPassPhrase="${20}"
+    customIdentityKeyStoreBase64String="${13}"
+    customIdentityKeyStorePassPhrase="${14}"
+    customIdentityKeyStoreType="${15}"
+    customTrustKeyStoreBase64String="${16}"
+    customTrustKeyStorePassPhrase="${17}"
+    customTrustKeyStoreType="${18}"
+    privateKeyAlias="${19}"
+    privateKeyPassPhrase="${20}"
 fi
 
-export wlsAdminPort=7001
-export wlsAdminSSLPort=7002
-export wlsAdminChannelPort=7005
-export wlsCoherenceServerPort=7501
-export wlsAdminURL="$adminVMName:$wlsAdminChannelPort"
+wlsAdminPort=7001
+wlsAdminSSLPort=7002
+wlsAdminChannelPort=7005
+wlsCoherenceServerPort=7501
+wlsAdminURL="$adminVMName:$wlsAdminChannelPort"
 
-export coherenceLocalport=42000
-export coherenceLocalportAdjust=42200
-export coherenceDebugSettings="-Djavax.net.debug=ssl,handshake -Dcoherence.log.level=9"
-export wlsCoherenceArgs="-Dcoherence.localport=$coherenceLocalport -Dcoherence.localport.adjust=$coherenceLocalportAdjust"
+coherenceLocalport=42000
+coherenceLocalportAdjust=42200
+coherenceDebugSettings="-Djavax.net.debug=ssl,handshake -Dcoherence.log.level=9"
+wlsCoherenceArgs="-Dcoherence.localport=$coherenceLocalport -Dcoherence.localport.adjust=$coherenceLocalportAdjust"
 
-export username="oracle"
-export groupname="oracle"
-export restartAttempt=0
+username="oracle"
+groupname="oracle"
+restartAttempt=0
 
-export KEYSTORE_PATH="$wlsDomainPath/$wlsDomainName/keystores"
-export SCRIPT_PATH="/u01/app/scripts"
+KEYSTORE_PATH="$wlsDomainPath/$wlsDomainName/keystores"
+SCRIPT_PATH="/u01/app/scripts"
 
 mkdir -p ${SCRIPT_PATH}
 sudo chown -R ${username}:${groupname} ${SCRIPT_PATH}

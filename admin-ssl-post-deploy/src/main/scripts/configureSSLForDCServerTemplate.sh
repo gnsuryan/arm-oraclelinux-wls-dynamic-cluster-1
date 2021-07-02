@@ -136,7 +136,7 @@ function wait_for_admin()
 echo "Waiting for admin server to start"
  #wait for admin to start
 count=1
-export CHECK_URL="http://$adminVMName:$wlsAdminChannelPort/weblogic/ready"
+CHECK_URL="http://$adminVMName:$wlsAdminChannelPort/weblogic/ready"
 status=`curl --insecure -ILs $CHECK_URL | tac | grep -m1 HTTP/1.1 | awk {'print $2'}`
 
 if [ "$status" == "200" ];
@@ -182,7 +182,7 @@ function parseLDAPCertificate()
     done
 
     openssl base64 -d -in ${SCRIPT_PWD}/security/AzureADLDAPCerBase64String.txt -out ${SCRIPT_PWD}/security/AzureADTrust.cer
-    export addsCertificate=${SCRIPT_PWD}/security/AzureADTrust.cer
+    addsCertificate=${SCRIPT_PWD}/security/AzureADTrust.cer
 }
 
 function importAADCertificateIntoWLSCustomTrustKeyStore()
@@ -243,7 +243,7 @@ function parseAndSaveCustomSSLKeyStoreData()
 
     echo "$customIdentityKeyStoreBase64String" > ${KEYSTORE_PATH}/identityKeyStoreCerBase64String.txt
     cat ${KEYSTORE_PATH}/identityKeyStoreCerBase64String.txt | base64 -d > ${KEYSTORE_PATH}/identity.keystore
-    export customSSLIdentityKeyStoreFile=${KEYSTORE_PATH}/identity.keystore
+    customSSLIdentityKeyStoreFile=${KEYSTORE_PATH}/identity.keystore
 
     rm -rf ${KEYSTORE_PATH}/identityKeyStoreCerBase64String.txt
 
@@ -252,7 +252,7 @@ function parseAndSaveCustomSSLKeyStoreData()
 
     echo "$customTrustKeyStoreBase64String" > ${KEYSTORE_PATH}/trustKeyStoreCerBase64String.txt
     cat ${KEYSTORE_PATH}/trustKeyStoreCerBase64String.txt | base64 -d > ${KEYSTORE_PATH}/trust.keystore
-    export customSSLTrustKeyStoreFile=${KEYSTORE_PATH}/trust.keystore
+    customSSLTrustKeyStoreFile=${KEYSTORE_PATH}/trust.keystore
 
     rm -rf ${KEYSTORE_PATH}/trustKeyStoreCerBase64String.txt
 
@@ -261,7 +261,7 @@ function parseAndSaveCustomSSLKeyStoreData()
 
 #main script starts here
 
-export SCRIPT_PWD=`pwd`
+SCRIPT_PWD=`pwd`
 
 # store arguments in a special array 
 args=("$@") 
@@ -270,72 +270,72 @@ ELEMENTS=${#args[@]}
  
 # echo each element in array  
 # for loop 
-for (( i=0;i<$ELEMENTS;i++)); do 
-    echo "ARG[${args[${i}]}]"
-done
+#for (( i=0;i<$ELEMENTS;i++)); do 
+#    echo "ARG[${args[${i}]}]"
+#done
 
 if [ $# -lt 15 ]
 then
     usage
     exit 1
 fi
-export wlsServerName="admin"
+wlsServerName="admin"
 
-export adminVMName=$1
-export wlsDomainName=$2
-export wlsUserName=$3
-export wlsPassword=$4
-export oracleHome=$5
-export wlsDomainPath=$6
+adminVMName=$1
+wlsDomainName=$2
+wlsUserName=$3
+wlsPassword=$4
+oracleHome=$5
+wlsDomainPath=$6
 
-export managedServerPrefix=${7}
-export coherenceServerPrefix="${managedServerPrefix}Storage"
-export dynamicClusterSize="${8}"
-export maxDynamicClusterSize="${9}"
+managedServerPrefix=${7}
+coherenceServerPrefix="${managedServerPrefix}Storage"
+dynamicClusterSize="${8}"
+maxDynamicClusterSize="${9}"
 
 wlsServerName="admin"
 
-export enableAAD="${10}"
+enableAAD="${10}"
 enableAAD="${enableAAD,,}"
 
-export wlsADSSLCer="${11}"
+wlsADSSLCer="${11}"
 
-export isCustomSSLEnabled="${12}"
+isCustomSSLEnabled="${12}"
 isCustomSSLEnabled="${isCustomSSLEnabled,,}"
 
 if [ "${isCustomSSLEnabled,,}" == "true" ];
 then
-    export customIdentityKeyStoreBase64String="${13}"
-    export customIdentityKeyStorePassPhrase="${14}"
-    export customIdentityKeyStoreType="${15}"
-    export customTrustKeyStoreBase64String="${16}"
-    export customTrustKeyStorePassPhrase="${17}"
-    export customTrustKeyStoreType="${18}"
-    export privateKeyAlias="${19}"
-    export privateKeyPassPhrase="${20}"
+    customIdentityKeyStoreBase64String="${13}"
+    customIdentityKeyStorePassPhrase="${14}"
+    customIdentityKeyStoreType="${15}"
+    customTrustKeyStoreBase64String="${16}"
+    customTrustKeyStorePassPhrase="${17}"
+    customTrustKeyStoreType="${18}"
+    privateKeyAlias="${19}"
+    privateKeyPassPhrase="${20}"
 fi
 
-export wlsAdminPort=7001
-export wlsAdminSSLPort=7002
-export wlsAdminChannelPort=7005
-export wlsManagedServerPort=8001
-export wlsCoherenceServerPort=7501
-export wlsAdminURL="$adminVMName:$wlsAdminChannelPort"
+wlsAdminPort=7001
+wlsAdminSSLPort=7002
+wlsAdminChannelPort=7005
+wlsManagedServerPort=8001
+wlsCoherenceServerPort=7501
+wlsAdminURL="$adminVMName:$wlsAdminChannelPort"
 
-export coherenceLocalport=42000
-export coherenceLocalportAdjust=42200
-export coherenceDebugSettings="-Djavax.net.debug=ssl,handshake -Dcoherence.log.level=9"
-export wlsCoherenceArgs="-Dcoherence.localport=$coherenceLocalport -Dcoherence.localport.adjust=$coherenceLocalportAdjust"
+coherenceLocalport=42000
+coherenceLocalportAdjust=42200
+coherenceDebugSettings="-Djavax.net.debug=ssl,handshake -Dcoherence.log.level=9"
+wlsCoherenceArgs="-Dcoherence.localport=$coherenceLocalport -Dcoherence.localport.adjust=$coherenceLocalportAdjust"
 
-export username="oracle"
-export groupname="oracle"
+username="oracle"
+groupname="oracle"
 
-export clusterName="cluster1"
-export coherenceClusterName="storage1"
-export dynamicClusterServerTemplate="myServerTemplate"
+clusterName="cluster1"
+coherenceClusterName="storage1"
+dynamicClusterServerTemplate="myServerTemplate"
 
-export KEYSTORE_PATH="$wlsDomainPath/$wlsDomainName/keystores"
-export SCRIPT_PATH="/u01/app/scripts"
+KEYSTORE_PATH="$wlsDomainPath/$wlsDomainName/keystores"
+SCRIPT_PATH="/u01/app/scripts"
 
 mkdir -p ${SCRIPT_PATH}
 sudo chown -R ${username}:${groupname} ${SCRIPT_PATH}

@@ -24,10 +24,10 @@
          }
       },
       "aadsSettings": {
-         "type": "object",
+         "type": "secureObject",
          "defaultValue": {
             "enable": false,
-            "certificateBase64String": "null"
+            "certificateBase64String": ""
          },
          "metadata": {
             "description": "If enable is true, must specify the certificateBase64String, which is the based64 string of LADP client certificate that will be imported to trust store of WebLogic Server to enable SSL connection of AD provider."
@@ -89,17 +89,17 @@
          }
       },
       "customSSLSettings": {
-         "type": "object",
+         "type": "secureObject",
          "defaultValue": {
             "enable": false,
-            "customIdentityKeyStoreBase64String": "null",
-            "customIdentityKeyStorePassPhrase": "null",
-            "customIdentityKeyStoreType": "null",
-            "customTrustKeyStoreBase64String": "null",
-            "customTrustKeyStorePassPhrase": "null",
-            "customTrustKeyStoreType": "null",
-            "privateKeyAlias":"null",
-            "privateKeyPassPhrase":"null"
+            "customIdentityKeyStoreBase64String": "",
+            "customIdentityKeyStorePassPhrase": "",
+            "customIdentityKeyStoreType": "",
+            "customTrustKeyStoreBase64String": "",
+            "customTrustKeyStorePassPhrase": "",
+            "customTrustKeyStoreType": "",
+            "privateKeyAlias":"",
+            "privateKeyPassPhrase":""
          },
          "metadata": {
             "description": "If enable is true, must specify all customSSLSettings. customIdentityKeyStoreBase64String and customTrustKeyStoreBase64String are the custom identity and trust keystore data repectively, i.e., contents of identity.jks, trust.jks keystore files in base64 encoding. Similarly, all other custom ssl settings are also required to configure SSL settings"
